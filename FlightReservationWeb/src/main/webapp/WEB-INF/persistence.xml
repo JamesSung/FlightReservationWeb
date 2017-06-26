@@ -1,0 +1,29 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+	version="2.0">
+ 
+	<persistence-unit name="myPu" transaction-type="RESOURCE_LOCAL">
+		<provider>org.hibernate.ogm.jpa.HibernateOgmPersistence</provider>
+     	<class>com.james.bo.Airport</class>
+     	<class>com.james.bo.Booking</class>
+     	<class>com.james.bo.Flight</class>
+     
+		<properties>
+			<property name="hibernate.ogm.datastore.provider" value="mongodb" />
+			<!-- property name="hibernate.ogm.datastore.database" value="jair" /-->
+			<property name="hibernate.ogm.datastore.database" value="hibernateDb" />
+			<property name="hibernate.ogm.datastore.host" value="localhost" />
+			<property name="hibernate.ogm.datastore.create_database" value="true" />
+			<property name="hibernate.ogm.datastore.username" value="root" /> 
+			<property name="hibernate.ogm.datastore.password" value="1234" />
+			<property name="show_sql" value="true" />
+			
+			<!-- for Jboss
+			<property name="jboss.as.jpa.providerModule" value="org.hibernate:ogm"/>
+        	<property name="jboss.as.jpa.adapterModule" value="org.jboss.as.jpa.hibernate:4"/>
+        	 -->
+        	
+		</properties>
+	</persistence-unit>
+</persistence>
