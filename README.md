@@ -1,7 +1,7 @@
 # FlightReservationWeb
 Web Component for Flight Reservation 
 
-Implemented using html, css, jquery, jsp, jstl and Spring MVC
+Implemented using HTML, CSS, Jquery, JSP, JSLT and Spring MVC
 
 This Project works together with <a href="https://github.com/JamesSung/FlightReservationProvider">FlightReservationProvider</a> project.
 
