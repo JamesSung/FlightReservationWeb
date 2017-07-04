@@ -6,6 +6,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -47,15 +49,14 @@ public class BookingController {
     @RequestMapping("/searchFlight")
     public String searchFlight(@RequestParam(value="departure", defaultValue="all") String departure, 
     		@RequestParam(value="arrival", defaultValue="all") String arrival,
-    		@RequestParam(value="departureDate",  required=false, defaultValue="06/20/2017") Date departureDate,
-    		@RequestParam(value="returnDate",  required=false, defaultValue="06/30/2017") Date returnDate,
+    		@RequestParam(value="departureDate",  required=false, defaultValue="07/01/2017") Date departureDate,
+    		@RequestParam(value="returnDate",  required=false, defaultValue="07/30/2017") Date returnDate,
     		Model model) {
     	
     	Date curr = new Date(System.currentTimeMillis());
     	
-    	//comment out because its going to be no more data soon
-    	//if(departureDate.before(curr))
-    	//	departureDate = curr;
+    	if(departureDate.before(curr))
+    		departureDate = curr;
     	
     	if(returnDate.before(curr)){
         	Calendar cal = Calendar.getInstance();
@@ -116,10 +117,17 @@ public class BookingController {
     }
     
     @RequestMapping(value = "/bookingList", method = {RequestMethod.GET, RequestMethod.POST})
-    public String bookingList(String booker, String password, Model model) {
-    	if(booker == null)  return "bookingList";
-    		
-    	List<Booking> bks = bookingService.findBookingsByBookerAndPassword(booker, password);
+    public String bookingList(String booker, String password, Model model, HttpServletRequest request) {
+    	
+    	String email = (String)request.getSession().getAttribute("email");
+    	System.out.println(email);
+
+    	if(booker == null && email == null)  return "bookingList";
+
+    	List<Booking> bks = email != null ?
+    			bookingService.findBookingsByBooker(email)
+    			: bookingService.findBookingsByBookerAndPassword(booker, password);
+    	System.out.println(bks);
     	if(logger.isDebugEnabled()){
     		logger.debug("BookingController.bookingList: " + bks);
     	}    	
@@ -130,5 +138,18 @@ public class BookingController {
         return "bookingList";
     }
 
+    @RequestMapping(value = "/login", method = {RequestMethod.GET})
+    public String login() {
+        
+        return "login";
+    }
 
+    @RequestMapping(value = "/greeting", method = {RequestMethod.POST})
+    public String greeting(String email, String name, HttpServletRequest request) {
+    	request.getSession().setAttribute("email",email);
+    	request.getSession().setAttribute("name",name);
+    	//System.out.println(request.getSession().getAttribute("email"));
+        
+        return "greeting";
+    }
 }
