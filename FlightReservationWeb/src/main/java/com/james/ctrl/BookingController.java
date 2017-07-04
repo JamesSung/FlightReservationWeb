@@ -56,7 +56,7 @@ public class BookingController {
     	Date curr = new Date(System.currentTimeMillis());
     	
     	if(departureDate.before(curr))
-    		departureDate = curr;
+    		departureDate = curr; 
     	
     	if(returnDate.before(curr)){
         	Calendar cal = Calendar.getInstance();
