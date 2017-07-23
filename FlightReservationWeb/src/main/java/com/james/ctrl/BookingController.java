@@ -6,29 +6,34 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.Valid;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import com.james.bo.Airport;
 import com.james.bo.Booking;
 import com.james.bo.Flight;
+import com.james.bo.User;
 import com.james.service.BookingService;
 import com.james.service.EntityMgmtService;
 
 @Controller
-public class BookingController {
+public class BookingController extends WebMvcConfigurerAdapter{
 
     @Autowired
     BookingService bookingService;
@@ -94,11 +99,19 @@ public class BookingController {
     }
 
     @RequestMapping(value = "/addBooking", method = RequestMethod.POST)
-    public String addBooking(@ModelAttribute Booking booking, @RequestParam(value="flightid") List<String> flightids, Model model) throws Exception{
+    public String addBooking(@ModelAttribute Booking booking, @RequestParam(value="flightid") List<String> flightids, Model model, HttpServletRequest request) throws Exception{
     	    	
     	List<Flight> fls = new ArrayList<Flight>();
     	for(String id: flightids){
     		fls.add(bookingService.findFlightById(id));
+    	}
+    	
+    	if(booking.getBooker() == null || "".equals(booking.getBooker())){
+    		if(request.getSession() != null){
+    	    	User user = bookingService.findUserByEmail((String)request.getSession().getAttribute("email"));
+    			booking.setBooker(user.getEmail());
+    	    	booking.setPassword(user.getPassword());
+    		}
     	}
     	
     	booking.setBookDate(new Date(System.currentTimeMillis()));
@@ -138,18 +151,80 @@ public class BookingController {
         return "bookingList";
     }
 
+    @RequestMapping(value = "/signup", method = {RequestMethod.GET})
+    public String signup(User userForm, Model model) {
+    	model.addAttribute("userForm", new User());
+        return "signup.html";
+    }
+    
+    @RequestMapping(value = "/signup", method = {RequestMethod.POST})
+    public String signupConfirm(@ModelAttribute("userForm") @Valid User userForm, BindingResult bindingResult, Model model) {
+    	
+        if (bindingResult.hasErrors()) {
+            return "signup.html";
+        }
+        
+    	entityMgmtService.createUser(userForm);
+    	
+        return "redirect:login";
+    }
+    
     @RequestMapping(value = "/login", method = {RequestMethod.GET})
     public String login() {
         
         return "login";
     }
+    
+    @RequestMapping(value = "/loginConfirm", method = {RequestMethod.POST})
+    public String loginConfirm(String email, String password, HttpServletRequest request, Model model) {
+    	
+    	User user = bookingService.findUserByEmail(email);
+    	System.out.println(user);
+    	if(user == null || !user.getPassword().equals(password)){
+	    	model.addAttribute("msg", "Userid or password doesn't match!");
+	        return "message";  
+    	}
+    	
+    	request.getSession().setAttribute("email",email);
+    	request.getSession().setAttribute("name",user.getFirstName());
+    	request.getSession().setAttribute("admin",user.isIsAdmin());
+        
+        return "redirect:searchFlight";//"greeting";
+    }
 
     @RequestMapping(value = "/greeting", method = {RequestMethod.POST})
-    public String greeting(String email, String name, HttpServletRequest request) {
+    public String greeting(String email, String name, HttpServletRequest request, Model model) {
+    	
+    	User user = bookingService.findUserByEmail(email);
+    	if(user == null && name != null){//first fb login
+    		String[] names = name.split(" ");
+    		String passwd = names[0];
+    		User newUser = new User();
+    		newUser.setEmail(email);
+    		newUser.setPassword(passwd);
+    		newUser.setFirstName(names[0]);
+    		if(names.length > 1)
+    			newUser.setLastName(names[names.length-1]);
+    		
+    		entityMgmtService.createUser(newUser);
+    		user = newUser;
+    		
+    	}
+    	
     	request.getSession().setAttribute("email",email);
     	request.getSession().setAttribute("name",name);
-    	//System.out.println(request.getSession().getAttribute("email"));
+    	request.getSession().setAttribute("admin",user.isIsAdmin());
         
-        return "greeting";
+        return "redirect:searchFlight";//"greeting";
     }
+    
+    @RequestMapping(value = "/logout", method = {RequestMethod.GET})
+    public String logout(HttpSession session, Model model) {
+    	
+    	session.invalidate();
+    	model.addAttribute("msg", "You've been logged out successfully!");
+        return "message";
+    }
+    
+    
 }

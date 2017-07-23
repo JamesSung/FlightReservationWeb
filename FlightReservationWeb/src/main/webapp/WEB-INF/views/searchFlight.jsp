@@ -18,11 +18,23 @@
     </head>
     <body>
     <h1>Flight Reservation System</h1>
- 	
     <div  class="center">
-        <h3>Search for Flights: </h3>
+	    <div  id="menu">
+		 	<a href="searchFlight"> HOME </a> 
+		 | 	<a href="bookingList"> MY BOOKINGS </a>
+			<c:choose>
+			    <c:when test="${empty sessionScope.name}">
+			 	| 	<a href="login"> LOGIN </a>
+			    </c:when>    
+			    <c:otherwise>
+			 	| 	<a href="logout"> LOGOUT </a>
+			    </c:otherwise>
+			</c:choose>
+		 | 	<a href="signup"> SIGN UP </a>
+		</div>
+        <h4>Hi ${ name }, Search for Flights! </h4>
         <form action="searchFlight" method="GET">
-            From: 
+            Fr: 
             <select name="departure">
 			    <option value="all" ${'all' == departure ? 'selected="selected"' : ''}>All</option>
 			    <c:forEach items="${airportList}" var="airport" >
@@ -36,11 +48,11 @@
 			        <option value="${airport.code}" ${airport.code == arrival ? 'selected="selected"' : ''}>${airport.name}</option>
 			    </c:forEach>
 			</select>
-			Depart: <input type="text" name="departureDate" id="datepicker" value="<fmt:formatDate value="${departureDate}" pattern="MM/dd/yyyy"/>">
-			Return: <input type="text" name="returnDate" id="datepicker2" value="<fmt:formatDate value="${returnDate}" pattern="MM/dd/yyyy"/>">
+			Dep: <input type="text" name="departureDate" id="datepicker" value="<fmt:formatDate value="${departureDate}" pattern="MM/dd/yyyy"/>">
+			Rtn: <input type="text" name="returnDate" id="datepicker2" value="<fmt:formatDate value="${returnDate}" pattern="MM/dd/yyyy"/>">
             <input class="button" type="submit" value="Search" />
         </form>
-        <h3>Flight List: </h3>
+        <!--h3>Flight List: </h3-->
         <form name="addItem" action="confirmBooking" method="POST" onSubmit="return checkItems()">
         <table>
             <thead>
@@ -85,7 +97,7 @@
 	</div>
 	
 	<div id="site">
-	  <strong>powered by JQuery, Spring, Hibernate OGM, and MongoDB</strong> <a href="https://github.com/JamesSung">Source Code Here</a>
+	  <strong>powered by JQuery, Spring, Hibernate OGM, and MongoDB</strong> <a href="https://github.com/JamesSung">.</a>
 	</div>
  	
     </body>

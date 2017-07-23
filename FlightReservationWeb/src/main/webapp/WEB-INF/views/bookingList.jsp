@@ -17,13 +17,34 @@
     </head>
     <body>
     <h1>Flight Reservation System</h1>
+	    
     <div  class="ticket">
+	    <div  id="menu">
+		 	<a href="searchFlight"> HOME </a> 
+		 | 	<a href="bookingList"> MY BOOKINGS </a>
+			<c:choose>
+			    <c:when test="${empty sessionScope.name}">
+			 	| 	<a href="login"> LOGIN </a>
+			    </c:when>    
+			    <c:otherwise>
+			 	| 	<a href="logout"> LOGOUT </a>
+			    </c:otherwise>
+			</c:choose>
+		 | 	<a href="signup"> SIGN UP </a>
+		</div> 
         <h3>Booking List: </h3>
-        <form name="addItem" action="bookingList" method="POST" onSubmit="return searchBooking()">
-            Email: <input type="text" name="booker" id="booker" value="${booker}"/>
-       		Password: <input type="password" name="password" id="password" value="${password}"/>
-        	<input class="button" type="submit" value="Search" />
-        </form>
+		<c:choose>
+		    <c:when test="${empty sessionScope.email}">
+		        <form name="addItem" action="bookingList" method="POST" onSubmit="return searchBooking()">
+		            Email: <input type="text" name="booker" id="booker" value="${booker}"/>
+		       		Password: <input type="password" name="password" id="password" value="${password}"/>
+		        	<input class="button" type="submit" value="Search" />
+		        </form>
+		    </c:when>    
+		    <c:otherwise>
+        		<h4>${ name }, ${ email }</h4>
+		    </c:otherwise>
+		</c:choose>        
         <table>
             <tbody>
 	            <c:forEach items="${bookingList}" var="booking" varStatus="statusB">

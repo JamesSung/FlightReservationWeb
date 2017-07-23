@@ -15,7 +15,8 @@
 			<property name="hibernate.ogm.datastore.database" value="hibernateDb" />
 			<property name="hibernate.ogm.datastore.host" value="localhost" />
 			<property name="hibernate.ogm.datastore.create_database" value="true" />
-			<property name="hibernate.ogm.datastore.username" value="root" /> 
+			<property name="hibernate.ogm.datastore.username" value="root" />  <!--  local pc -->
+			<!-- <property name="hibernate.ogm.datastore.username" value="webUser" />  aws serrver -->
 			<property name="hibernate.ogm.datastore.password" value="1234" />
 			<property name="show_sql" value="true" />
 			

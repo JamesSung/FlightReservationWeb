@@ -19,6 +19,7 @@ import com.james.service.BookingService;
 import com.james.service.EntityMgmtService;
 
 @Controller
+@RequestMapping("/admin")
 public class AdminController {
 	
     @Autowired
@@ -44,7 +45,7 @@ public class AdminController {
     	
     	model.addAttribute("airportList", ars);
     	model.addAttribute("city", city);
-        return "airport";
+        return "admin/airport";
     }
 
     @RequestMapping("/flight")
@@ -82,7 +83,7 @@ public class AdminController {
         model.addAttribute("departure", departure);
         model.addAttribute("arrival", arrival);
         model.addAttribute("departureDate", departureDate);
-        return "flight";
+        return "admin/flight";
     }
 
     @RequestMapping(value = "/addAirport", method = RequestMethod.POST)

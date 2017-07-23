@@ -17,7 +17,7 @@
     <body>
     <h1>Flight Reservation System</h1>
     <div  class="ticket">
-        <h3>Flight List: </h3>
+        <h4>Flight List: "${ name }"</h4>
         <form name="addItem" action="addBooking" method="POST" onSubmit="return confirmBooking()">
         <table>
             <tbody>
@@ -39,8 +39,10 @@
             </tbody>
         </table>
         	<input class="button" type="button" value="Back" onClick="javasctipt: window.history.back()"/>
-        	Email: <input type="text" name="booker" id="booker" value="${booker}"/>
-       		Password: <input type="password" name="password" id="password" value="${password}"/>
+       	    <c:if test="${empty sessionScope.email }">
+	        	Email: <input type="text" name="booker" id="booker" value="${booker}"/>
+	       		Password: <input type="password" name="password" id="password" value="${password}"/>
+	        </c:if>
         	<input class="button" type="submit" value="Confirm" />
         </form>
         <br />
